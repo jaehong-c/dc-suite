@@ -1,0 +1,60 @@
+/* DC Wire: thumbnails and source marks. Loaded by app/news/layout.js. */
+.wire-item {
+  grid-template-columns: 84px 112px minmax(0, 1fr);
+  align-items: start;
+}
+.wire-thumb {
+  width: 112px;
+  height: 72px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--fill);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+}
+.wire-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.wire-thumb-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.wire-thumb-mark img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+.wire-thumb-mark span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.wire-item-source {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.wire-item-source img {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+}
+@media (max-width: 860px) {
+  .wire-item {
+    grid-template-columns: 96px minmax(0, 1fr);
+  }
+  .wire-item-date {
+    grid-column: 1 / -1;
+  }
+}
