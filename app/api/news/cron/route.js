@@ -10,7 +10,7 @@ export const maxDuration = 60;
 // Budget for link resolution and image lookups across all topics. Google
 // calls are serialized process-wide, so this is what bounds the run; the
 // digests need the remaining time.
-const RESOLVE_BUDGET_MS = 38000;
+const RESOLVE_BUDGET_MS = 30000;
 
 // Vercel Cron calls this with "Authorization: Bearer <CRON_SECRET>". A
 // ?secret= query is accepted too so the job can be run by hand from a browser.
