@@ -58,3 +58,15 @@
     grid-column: 1 / -1;
   }
 }
+
+/* Waiting state for the headline list: spinner plus what is happening. */
+.wire-state-busy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: left;
+}
+.wire-state-busy .spinner {
+  flex: none;
+}

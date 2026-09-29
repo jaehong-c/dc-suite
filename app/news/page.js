@@ -248,7 +248,13 @@ export default function Wire() {
 
         <div className="wire-list">
           {(checking || loading) && (
-            <div className="wire-state">Loading {current.name.toLowerCase()} headlines</div>
+            <div className="wire-state wire-state-busy" role="status" aria-live="polite">
+              <span className="spinner" aria-hidden="true" />
+              <span>
+                {checking ? "Opening today's edition." : `Reading the live ${current.name.toLowerCase()} feeds and looking up article images.`}{" "}
+                <span style={{ color: "var(--ink-3)" }}>{checking ? "A second or two." : "Usually 5 to 20 seconds."}</span>
+              </span>
+            </div>
           )}
           {!checking && !loading && error && (
             <div className="wire-state">
