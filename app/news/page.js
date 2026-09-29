@@ -95,8 +95,10 @@ export default function Wire() {
   // Live feeds fetched on demand, keyed by topic
   const [live, setLive] = useState({});
   const [liveMode, setLiveMode] = useState({});
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  // Per topic, so switching topics while one feed is still loading never
+  // leaves the list stuck on "loading" or shows another topic's error.
+  const [loadingBy, setLoadingBy] = useState({});
+  const [errorBy, setErrorBy] = useState({});
 
   // On-demand digests (override the snapshot's for this session)
   const [digests, setDigests] = useState({});
@@ -127,29 +129,26 @@ export default function Wire() {
   // 2. Fetch live headlines when there is no snapshot or the user asked for live.
   useEffect(() => {
     if (snapshot === undefined) return; // still checking
-    if (!useLive || live[topic]) return;
-    let cancelled = false;
-    setLoading(true);
-    setError(null);
-    fetch(`/api/news/feed?topic=${topic}`)
+    if (!useLive || live[topic] || loadingBy[topic]) return;
+    const key = topic;
+    setLoadingBy((m) => ({ ...m, [key]: true }));
+    setErrorBy((m) => ({ ...m, [key]: null }));
+    fetch(`/api/news/feed?topic=${key}`)
       .then(async (r) => {
         const j = await r.json();
         if (!r.ok) throw new Error(j.error || "Feed failed");
         return j;
       })
       .then((j) => {
-        if (!cancelled) setLive((c) => ({ ...c, [topic]: j }));
+        setLive((c) => ({ ...c, [key]: j }));
       })
       .catch((e) => {
-        if (!cancelled) setError(e.message);
+        setErrorBy((m) => ({ ...m, [key]: e.message }));
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        setLoadingBy((m) => ({ ...m, [key]: false }));
       });
-    return () => {
-      cancelled = true;
-    };
-  }, [topic, snapshot, useLive, live]);
+  }, [topic, snapshot, useLive, live, loadingBy]);
 
   const items = useLive ? live[topic]?.items || [] : snapTopic?.items || [];
   const digestText = digests[topic] || (!useLive ? snapTopic?.digest : null);
@@ -175,6 +174,8 @@ export default function Wire() {
   }
 
   const checking = snapshot === undefined;
+  const loading = Boolean(loadingBy[topic]);
+  const error = errorBy[topic] || null;
 
   return (
     <main className="wire">
