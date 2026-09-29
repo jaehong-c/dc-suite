@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { TOPICS } from "@/lib/news/topics";
+import Working from "@/components/shell/Working";
 
 function fmtDate(iso) {
   if (!iso) return "";
@@ -13,11 +14,20 @@ function faviconOf(domain) {
 }
 
 function Thumb({ item }) {
+  // A publisher image can 403 or vanish after the feed was read; fall back to
+  // the source mark instead of showing a broken picture.
+  const [broken, setBroken] = useState(false);
   const fav = faviconOf(item.domain);
-  if (item.image) {
+  if (item.image && !broken) {
     return (
       <span className="wire-thumb">
-        <img src={item.image} alt="" loading="lazy" referrerPolicy="no-referrer" />
+        <img
+          src={item.image}
+          alt=""
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setBroken(true)}
+        />
       </span>
     );
   }
@@ -222,9 +232,10 @@ export default function Wire() {
               {digesting ? "Writing" : digestText ? "Rewrite" : "Write digest"}
             </button>
           </div>
-          {digestText ? (
+          {digesting && <Working label="Reading the headlines and writing three paragraphs." />}
+          {digestText && !digesting ? (
             <Digest text={digestText} items={items} />
-          ) : (
+          ) : digesting ? null : (
             <p className="wire-digest-empty">
               {digestError
                 ? digestError
